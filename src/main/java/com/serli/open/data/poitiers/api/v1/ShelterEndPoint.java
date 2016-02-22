@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 /**
  * Created by chris on 04/05/15.
  */
+/*
 @Prefix("bike-shelters")
 public class ShelterEndPoint {
     @Get("/all")
@@ -19,7 +20,7 @@ public class ShelterEndPoint {
         return OpenDataRepository.INSTANCE.getAll(Shelter.class);
     }
 
-    @Get("/find?lat=:lat&lon=:lon&size=:size")
+   @Get("/find?lat=:lat&lon=:lon&size=:size")
     public List<GeolocResultV1<Shelter>> find(double lat, double lon, int size){
         return OpenDataRepository.INSTANCE.find(lat, lon, size, Shelter.class)
                 .stream()
@@ -27,3 +28,4 @@ public class ShelterEndPoint {
                 .collect(Collectors.toList());
     }
 }
+*/
