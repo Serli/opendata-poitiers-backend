@@ -1,4 +1,4 @@
-package com.serli.open.data.poitiers.jobs.importer;
+package com.serli.open.data.poitiers.jobs.importer.v1;
 
 import com.serli.open.data.poitiers.api.v2.model.Shelter;
 import com.serli.open.data.poitiers.elasticsearch.ElasticUtils;
