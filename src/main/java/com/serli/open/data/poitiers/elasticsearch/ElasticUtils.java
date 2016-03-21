@@ -1,5 +1,7 @@
 package com.serli.open.data.poitiers.elasticsearch;
 
+import com.serli.open.data.poitiers.api.v2.model.settings.Settings;
+import com.serli.open.data.poitiers.repository.SettingsRepository;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.JestResult;
 import io.searchbox.client.config.HttpClientConfig;
@@ -46,21 +48,29 @@ public abstract class ElasticUtils {
             }
         }
     }
-
-    public static void createMapping(String indexName, String type, String mappingFilePath, String esURL) {
+    
+     public static void createMapping(String indexName, String type, String mappingFilePath, String esURL) {
         try (RuntimeJestClient client = createClient()) {
             DeleteMapping deleteMapping = new DeleteMapping.Builder(indexName, type).build();
             client.execute(deleteMapping);
-
             String mappingFile;
-            try {
-                mappingFile = IOUtils.toString(ElasticUtils.class.getResourceAsStream(mappingFilePath));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            Object mappingConf;
+            
+            if(mappingFilePath != null ) {
+                try {
+                    mappingFile = IOUtils.toString(ElasticUtils.class.getResourceAsStream(mappingFilePath));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
 
-            PutMapping putMapping = new PutMapping.Builder(indexName, type, mappingFile).build();
-            client.execute(putMapping);
+                PutMapping putMapping = new PutMapping.Builder(indexName, type, mappingFile).build();
+                client.execute(putMapping);
+            } else {
+                Settings settings = SettingsRepository.INSTANCE.getAllSettings();
+                mappingConf = settings.mapping.get(type);
+                PutMapping putMapping = new PutMapping.Builder(indexName, type, mappingConf).build();
+                client.execute(putMapping);
+            }
         }
     }
 

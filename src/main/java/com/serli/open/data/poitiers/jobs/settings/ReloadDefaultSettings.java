@@ -19,8 +19,8 @@ public class ReloadDefaultSettings implements Job {
 
     @Override
     public void run() {
+      
         InputStream inputStream = ReloadDefaultSettings.class.getResourceAsStream("/default.settings/default-settings.json");
-
         ObjectMapper objectMapper = new ObjectMapper();
         Settings settings;
         try {

@@ -13,22 +13,108 @@ title: Open Data Poitiers - By Serli
         Action failed
     </div>
 
-    <table class="table" id="sources-table">
-        <thead>
-                <th>Index</th>
-                <th>Action</th>
-                <th>URL</th>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+   <div class="panel-heading">
+       <div class="loading"> </div>
+        <div class="collapse navbar-collapse">
 
-    <form>
-        <div class="form-group">
-            <label for="dashboardURL">URL du dashboard:</label>
-            <textarea class="form-control" id="dashboardURL" rows="5"></textarea>
+        </div> 
+        <div class="tab-content" id="myTabContent">
+            
+            <div id="a" class="tab-pane fade">
+                    <br/>
+                    <table class="table table-hover" id="sources-table">
+                        <thead class="mytableheader">
+                        <th>Index</th>
+                        <th>Action</th>
+                        <th>URL</th>
+                        </thead>
+                        <tbody class="mytbody">
+                        </tbody>
+                    </table>    
+            </div>
+        
+            <div id="b" class="tab-pane fade">
+                <br/>
+                <div class="mytbody">
+                <div class="form-group">
+                    <br/>
+                    <label for="fileURL">URL du fichier : </label>
+                    <input class="form-control" id="fileURL" name="fileURL" rows="2" resize="none"></input><br/>
+                    <div class="msg_line"></div>
+                </div>  
+                <div>
+                    <input type="text" id="elastic-type-field" name="elastic-type" placeholder="Elastic type" style="height: 30px"/>
+
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>Add/remove field:</label>
+                    <button class="add_field_button btn btn-default"><span class="glyphicon glyphicon-plus"></span></button>
+                    <button class="remove-last-val btn btn-default" ><span class="glyphicon glyphicon-minus"></span></button>
+
+                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label>Reverse geocoding :</label>
+
+                    <input type="checkbox" id="geocoding" name="geocation[]" checked="checked"/> 
+                    <br/><br/>
+                    <table id="tableType" class="table mytbody" style="margin-bottom: 0px">
+                        <thead class="mytableheader">
+                        <th>Json Field</th>
+                        <th>ES Field</th>
+                        <th>Not_analyzed</th>
+                        </thead>
+
+                        <tbody class="mytbody input_fields_wrap">
+                            <tr>
+                                <td><input class="fields" type="text" id="jsonField1" name="jsonField[]" placeholder="Field in Json file"/></td>
+                                <td><input class="fields" type="text" id="esField1" name="esField[]" placeholder="Field that will be stored in ES"/></td>
+                                <td><input class="fields" type="checkbox" id="not_analyzed1" name="not_analyzed[]"/></td>
+                            </tr>
+                        </tbody> 
+                    </table>
+                </div>
+                <br/><button class="add_data_button btn btn-default"  type="button">Add data</button><br/><br/>
+            </div>
+            </div>
+            <div id="c" class="tab-pane fade">
+                <div class="panel panel-primary">
+                    <div class="panel-heading"><h4>Dashboard</h4></div>
+                    <div class="panel-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="dashboardURL">Dashboard url :</label>
+                                <textarea class="form-control" id="dashboardURL" rows="5"></textarea>
+                            </div>
+                            <button id="dashboardUpdateButton" type="button" class="btn btn-default">Update</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-        <button id="dashboardUpdateButton" type="button" class="btn btn-default">Update</button>
-    </form>
+    </div>
 </div>
+
 <script src="assets/js/admin.js"></script>
+<script src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
+<script>
+$('#myTab a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+</script>
+
+<script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip({
+                placement: 'top'
+            });
+            
+            // permet l'affichage de la données en modifiant l'attribut class du div souhaité et y ajoutant active in
+            var chemin = document.location.href;
+            if(chemin.substring(chemin.lastIndexOf( "#" ))==="#a"){
+                document.getElementById('a').setAttribute('class','tab-pane fade active in');
+            }else if(chemin.substring(chemin.lastIndexOf( "#" ))==="#b"){
+                document.getElementById('b').setAttribute('class','tab-pane fade active in');
+            }else if(chemin.substring(chemin.lastIndexOf( "#" ))==="#c"){
+                document.getElementById('c').setAttribute('class','tab-pane fade active in');
+            }else{
+                document.getElementById('a').setAttribute('class','tab-pane fade active in');
+            }
+        });
+</script>
