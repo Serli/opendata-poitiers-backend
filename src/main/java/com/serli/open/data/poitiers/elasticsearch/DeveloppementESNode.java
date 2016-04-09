@@ -1,12 +1,5 @@
 package com.serli.open.data.poitiers.elasticsearch;
 
-import com.serli.open.data.poitiers.jobs.JobRunner;
-import com.serli.open.data.poitiers.jobs.importer.ImportBikeSheltersDataJob;
-import com.serli.open.data.poitiers.jobs.importer.ImportDisabledParkingsDataJob;
-
-import com.serli.open.data.poitiers.jobs.importer.ImportGlassContainerDataJob;
-
-import com.serli.open.data.poitiers.jobs.importer.ImportDefibrillatorsDataJob;
 
 import com.serli.open.data.poitiers.jobs.settings.ReloadDefaultSettings;
 import org.apache.commons.io.FileUtils;
@@ -23,6 +16,8 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 import static com.serli.open.data.poitiers.jobs.JobRunner.run;
+import com.serli.open.data.poitiers.jobs.importer.v1.ImportBikeSheltersDataJob;
+import com.serli.open.data.poitiers.jobs.importer.v2.ImportDataFromType;
 
 /**
  * Embedded ES node for dev purpose, <b>Do not use in production, data will be lost</b>. Data is stored in temp directory : <b>tmp/es-local-data</b>.
@@ -31,6 +26,11 @@ public class DeveloppementESNode {
 
     public static final String ES_LOCAL_DATA = "tmp/es-local-data";
     private static final Logger LOGGER = LoggerFactory.getLogger(DeveloppementESNode.class);
+    private static Node node ;
+    
+    public static Node getNode(){
+        return DeveloppementESNode.node;
+    }
 
     public static void createDevNode() {
         LOGGER.info("Creating dev ES node ...");
@@ -47,19 +47,20 @@ public class DeveloppementESNode {
                 .put("path.data", ES_LOCAL_DATA)
                 .build();
 
-        Node node = NodeBuilder.nodeBuilder()
+        node = NodeBuilder.nodeBuilder()
                 .local(true)
                 .data(true)
                 .clusterName("elasticSearch" + UUID.randomUUID())
                 .settings(settings)
                 .build();
         node.start();
+        
         // loading settings
         run(ReloadDefaultSettings.class);
-        // importing Data
-        run(ImportBikeSheltersDataJob.class);
-        run(ImportDisabledParkingsDataJob.class);
-        run(ImportGlassContainerDataJob.class);
-        run(ImportDefibrillatorsDataJob.class);
+        
+        //run(ImportBikeSheltersDataJob.class);
+        
+        /*ImportDataFromType.elasticType = "textile-spots";
+        run(ImportDataFromType.class);*/
     }
 }

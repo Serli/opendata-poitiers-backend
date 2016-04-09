@@ -1,4 +1,4 @@
-package com.serli.open.data.poitiers.repository;
+/*package com.serli.open.data.poitiers.repository;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -9,9 +9,10 @@ import com.serli.open.data.poitiers.api.v2.model.GeolocResult;
 import com.serli.open.data.poitiers.api.v2.model.settings.DataSource;
 import com.serli.open.data.poitiers.api.v2.model.settings.Settings;
 import com.serli.open.data.poitiers.repository.ElasticSearchRepository;
+import com.serli.open.data.poitiers.repository.OpenDataRepository;
 import com.serli.open.data.poitiers.repository.SettingsRepository;
 import static com.serli.open.data.poitiers.repository.ElasticSearchRepository.OPEN_DATA_POITIERS_INDEX;
-import io.searchbox.core.Index; 
+import io.searchbox.core.Index;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 
@@ -22,16 +23,30 @@ import java.util.stream.StreamSupport;
 /**
  *  @author Julien L
  */
-public class OpenDataRepository extends ElasticSearchRepository {
+/*
+public class OpenDataRepositoryV1 extends ElasticSearchRepository {
 
     public static final String BIKE_SHELTERS_TYPE = "bike-shelters";
     public static final String DISABLED_PARKINGS_TYPE = "disabled-parkings";
     public static final String GLASS_CONTAINERS_TYPE = "glass-containers";
     public static final String DEFIBRILLATORS_TYPE = "defibrillators";
 
-    public static final OpenDataRepository INSTANCE = new OpenDataRepository();
+    public static final OpenDataRepositoryV1 INSTANCE = new OpenDataRepositoryV1();
 
     public final BiMap<Class<?>, String> classToTypeCache = HashBiMap.create();
+
+    private void index(Object object, String type) {
+        Index index = new Index.Builder(object)
+                .index(OPEN_DATA_POITIERS_INDEX)
+                .type(type)
+                .build();
+        client.execute(index);
+    }
+
+    public void index(Object object) {
+        String type = getElasticType(object.getClass());
+        index(object, type);
+    }
 
     public <T> List<GeolocResult<T>> find(double lat, double lon, int size, Class<T> clazz) {
         String elasticType = getElasticType(clazz);
@@ -46,7 +61,6 @@ public class OpenDataRepository extends ElasticSearchRepository {
     }
 
     private <T> List<GeolocResult<T>> find(double lat, double lon, int size, Class<T> clazz, String elasticType) {
-        
         if (size == 0) {
             size = 10;
         }
@@ -119,17 +133,6 @@ public class OpenDataRepository extends ElasticSearchRepository {
         return StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(searchResult.getHits(clazz).iterator(), Spliterator.ORDERED),
                 false).map(hitResult -> hitResult.source).collect(Collectors.toList());
-       
-        
-        /*JsonObject jsonObject = searchResult.getJsonObject();
-        JsonArray jsonHits = jsonObject.get("hits").getAsJsonObject().get("hits").getAsJsonArray();
-        
-        Gson gson = new Gson();
-
-        return StreamSupport.stream(jsonHits.spliterator(), false).map(jsonElement -> {
-                T result = gson.fromJson(jsonElement.getAsJsonObject().get("_source").getAsJsonObject(), clazz);
-                return result;
-        }).collect(Collectors.toList());*/
     }
 
 
@@ -169,9 +172,6 @@ public class OpenDataRepository extends ElasticSearchRepository {
         }
 
         Class<?> clazz = classToTypeCache.inverse().get(type);
-        if (clazz == null) {
-            clazz = Map.class;
-        }
         if(type == null){
             reloadClassTypeCache();
             clazz = classToTypeCache.inverse().get(type);
@@ -189,3 +189,4 @@ public class OpenDataRepository extends ElasticSearchRepository {
     }
 
 }
+*/

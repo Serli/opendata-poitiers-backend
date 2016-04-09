@@ -1,13 +1,19 @@
 package com.serli.open.data.poitiers.api;
 
+import com.serli.open.data.poitiers.api.v2.model.settings.DataSource;
 import com.serli.open.data.poitiers.api.v2.model.settings.Settings;
-import com.serli.open.data.poitiers.jobs.Job;
-import com.serli.open.data.poitiers.jobs.JobRunner;
+import static com.serli.open.data.poitiers.jobs.JobRunner.run;
+import com.serli.open.data.poitiers.jobs.configuration.GenerateConfigurationFiles;
+import com.serli.open.data.poitiers.jobs.importer.v2.ImportDataFromType;
 import com.serli.open.data.poitiers.jobs.settings.ReloadDefaultSettings;
 import com.serli.open.data.poitiers.repository.SettingsRepository;
-import net.codestory.http.annotations.Get;
+import java.io.IOException;
+import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.codestory.http.annotations.Prefix;
 import net.codestory.http.annotations.Put;
+import org.json.JSONException;
 
 /**
  * Created by chris on 13/11/15.
@@ -19,19 +25,14 @@ public class AdminEndPoint {
         System.out.println("Reload : " + type);
         Settings settings = SettingsRepository.INSTANCE.getAllSettings();
         if ("all".equals(type)) {
-            settings.sources.values().forEach((source) -> launchJob(source.reloadJobClass));
+            for (Entry<String, DataSource> entry : settings.sources.entrySet())
+            {
+                ImportDataFromType.elasticType = entry.getKey();
+                run(ImportDataFromType.class);
+            }
         } else {
-            String reloadJobClass = settings.sources.get(type).reloadJobClass;
-            launchJob(reloadJobClass);
-        }
-    }
-
-    private void launchJob(String reloadJobClass) {
-        try {
-            Class<? extends Job> jobClass = (Class<? extends Job>) Class.forName(reloadJobClass);
-            JobRunner.run(jobClass);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            ImportDataFromType.elasticType = type;
+            run(ImportDataFromType.class);
         }
     }
 
@@ -45,5 +46,19 @@ public class AdminEndPoint {
     public void putDashboardURL(String newURL) {
         SettingsRepository.INSTANCE.putNewDashBoardURL(newURL);
     }
-
+    
+    @Put("/create-files")
+    public void addData(String monJson) {
+        try {
+            GenerateConfigurationFiles.generateConfFile(monJson);
+            GenerateConfigurationFiles.updateDefaultSettings(monJson);
+            GenerateConfigurationFiles.generateESMapping(monJson);
+            
+        } catch (JSONException ex) {
+            //TODO : Ajouter traitement
+            Logger.getLogger(AdminEndPoint.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(AdminEndPoint.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }   
 }
